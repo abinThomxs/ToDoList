@@ -2,60 +2,112 @@ import './App.css';
 import { useState } from 'react';
 
 function App() {
-  const [toDos, setTodos] = useState([]);
-  const [toDo, setToDo] = useState('');
+  const [toDos, setToDos] = useState([]);
+  const [toDo, settoDo] = useState('');
+  let [filters, setFilter] = useState('');
+  function deleteList(id) {
+    console.log('delete');
+    const removeItem = toDos.filter((todo) => {
+      return todo.id !== id;
+    });
+    setToDos([...removeItem]);
+  }
   return (
     <div className="app">
       <div className="mainHeading">
         <h1>ToDo List</h1>
+        
       </div>
       <div className="subHeading">
+      <h3 className='subHead' >Proper planning finishes half the Work</h3>
         <br />
-        <h2>Whoop, it's Wednesday 🌝 ☕ </h2>
       </div>
       <div className="input">
-        <input value={toDo} onChange={(e) => setToDo(e.target.value)} type="text" placeholder="🖊️ Add item..." />
-        <i onClick={() => setTodos([...toDos, {id:Date.now() ,text: toDo, status:false, flag:1}])} className="fas fa-plus"></i>
+        <input type="text" value={toDo} onChange={(e) => settoDo(e.target.value)} placeholder="🖊️ Add item..." />
+        <i onClick={() => { setToDos([...toDos, { id: Date.now(), text: toDo, status: false }]) }} className="fas fa-plus add"></i>
+      </div>
+      <div className='filter'>
+        <div onClick={() => { setFilter('all') }} className='box-3'>
+          <div className='btn btn-three'>
+            <span>All</span>
+          </div>
+        </div>
+        <div onClick={() => { setFilter('completed') }} className='box-3'>
+          <div className='btn btn-three'>
+            <span>Completed</span>
+          </div>
+        </div>
+        <div onClick={() => {
+          setFilter('uncompleted');
+          console.log(filters);
+        }} className='box-3'>
+          <div className='btn btn-three'>
+            <span>Uncompleted</span>
+          </div>
+        </div>
       </div>
       <div className="todos">
-        { toDos.map((obj) => {
-
-          return (<div className="todo">
-            <div className="left">
-              <input onChange={(e) => {
-                console.log(e.target.checked);
-                console.log(obj)
-                setTodos(toDos.filter(obj2 => {
-                  if(obj2.id === obj.id && obj.flag === 1){
-                    obj2.status = e.target.checked;
-                  }                  
-                    return obj2;     
-                 
-                }))
-              }}
-               value={obj.status} type="checkbox" name="" id="" />
-              <p>{obj.text}</p>
-              
-            </div>
-            <div className="right">
-              <i onClick={() => setTodos([toDo, {flag:0}])} className="fas fa-times"></i>
-              
-            </div>      
-            
-            
-          </div>)
-
-        })}
-
-        {toDos.map((obj) => {
-          if(obj.status){
-            return(<h1>{obj.text}</h1>)
+        {toDos.map((value, index) => {
+          if (filters === '' || filters === 'all') {
+            return (
+              <div className="todo" key={index}>
+                <div className="left">
+                  <input
+                    onChange={(e) => {
+                      setToDos(toDos.filter(obj => {
+                        if (obj.id === value.id) {
+                          obj.status = e.target.checked
+                        }
+                        return obj
+                      }))
+                    }}
+                    checked={value.status}
+                    value={value.status}
+                    type="checkbox"
+                    name=""
+                    id=""
+                    className="che" />
+                  <p>{value.status === true ? <s>{value.text}</s> : value.text}</p>
+                </div>
+                <div className="right">
+                  <i className='far fa-trash-alt delete' onClick={() => { deleteList(value.id) }}></i>
+                </div>
+              </div>)
+          } else if (filters === 'completed' || filters === 'uncompleted') {
+            const stat = filters === 'completed' ? true : false;
+            if (value.status === stat) {
+              return (
+                <div className="todo" key={value.id}>
+                  <div className="left">
+                    <input
+                      onChange={(e) => {
+                        setToDos(toDos.filter(obj => {
+                          if (obj.id === value.id) {
+                            obj.status = e.target.checked
+                          }
+                          return obj
+                        }))
+                      }}
+                      checked={value.status}
+                      value={value.status}
+                      type="checkbox"
+                      name=""
+                      id=""
+                      className="che" />
+                    <p>{value.status === true ? <s>{value.text}</s> : value.text}</p>
+                  </div>
+                  <div className="right">
+                    <i className='far fa-trash-alt delete' onClick={() => { deleteList(value.id) }}></i>
+                  </div>
+                </div>)
+            }
           }
           return null;
-        })}
-
+        })
+        }
       </div>
     </div>
   );
 }
+
 export default App;
